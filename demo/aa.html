@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>obj载入</title>
+
+  <style>
+    #label{
+      position: absolute;
+      padding: 10px;
+      width: 200px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.6);
+      line-height: 1;
+      border-radius: 5px;
+      right: 10px;
+      top: 10px;
+    }
+
+    #smallwindow{
+      position: absolute;
+      padding: 10px;
+      width: 200px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.6);
+      line-height: 1;
+      border-radius: 5px;
+      right: 10px;
+      top: 10px;
+    }
+
+    #nlist{
+
+      position: absolute;
+      padding: 10px;
+      width: 100px;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.6);
+      line-height: 1;
+      color: #00ff78;
+      border-radius: 5px;
+      right: 10px;
+      bottom: 10px;
+    }
+
+  </style>
+
+
+  <!--引入three.js三维引擎-->
+  <script src="js/less.js" type="text/javascript" charset="utf-8"></script>
+
+  <script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>
+  <script type="text/javascript" src="js/three.js"></script>
+  <script type="text/javascript" src="js/TrackballControls.js"></script>
+  <script type="text/javascript" src="js/DDSLoader.js"></script>
+  <script type="text/javascript" src="js/OBJLoader.js"></script>
+  <script type="text/javascript" src="js/OBJMTLLoader.js"></script>
+  <script src="https://ithanmang.gitee.io/threejs/home/libs/examples/js/Detector.js" type="text/javascript" charset="utf-8"></script>
+  <script src="https://ithanmang.gitee.io/threejs/home/libs/examples/js/libs/dat.gui.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="http://www.yanhuangxueyuan.com/threejs/examples/js/controls/OrbitControls.js" type="text/javascript" charset="utf-8"></script>
+  <script src="https://ithanmang.gitee.io/threejs/home/libs/examples/js/controls/TransformControls.js" type="text/javascript" charset="utf-8"></script>
+  <script src="https://ithanmang.gitee.io/threejs/home/libs/examples/js/controls/DragControls.js" type="text/javascript" charset="utf-8"></script>
+
+  <script src="js/rangeslider.min.js" type="text/javascript" charset="utf-8"></script>
+
+  <script src="js/jquery.ztree.all.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="js/treeSelect.js" type="text/javascript" charset="utf-8"></script>
+
+  <!-- <script src="./three.js"></script> -->
+  <!-- <script src="http://www.yanhuangxueyuan.com/threejs/build/three.js"></script> -->
+</head>
+
+<body>
+<div id="smallwindow" style="display: none;"></div>
+<div id="label" style="display: none;"></div>
+
+<div id = "nlist">
+
+</div>
+
+</body>
+
+<script>
+  /**
+   * 创建场景对象Scene
+   */
+
+  var scene, camera, renderer, controls, light, selectObject, meshArrs, meshParent, labelToggle = true,
+          changeMaterialBool = false,
+          colorsOfObj = {},
+          activeObj;
+
+  function init() {
+      scene = new THREE.Scene();
+
+      camera = new THREE.PerspectiveCamera(10, window.innerWidth / window.innerHeight, 0.1, 2000);
+      camera.position.set(50, 30, 30);
+
+      /*
+      var width = window.innerWidth; //窗口宽度
+      var height = window.innerHeight; //窗口高度
+      var k = width / height; //窗口宽高比
+      var s = 200; //三维场景显示范围控制系数，系数越大，显示的范围越大
+      //创建相机对象
+      camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 2000);
+      camera.position.set(200, 300, 200); //设置相机位置
+      camera.lookAt(scene.position); //设置相机方向(指向的场景对象)
+      */
+
+       //创建渲染器对象
+      if(Detector.webgl) {
+        renderer = new THREE.WebGLRenderer({
+          antialias: true
+        });
+      } else {
+        renderer = new THREE.CanvasRenderer();
+      }
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor('black');
+      document.body.appendChild(renderer.domElement);
+    /*
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(width, height);//设置渲染区域尺寸
+      //renderer.setClearColor(0xb9d3ff, 1); //设置背景颜色
+      renderer.setClearColor("black");
+      document.body.appendChild(renderer.domElement); //body元素中插入canvas对象
+      //执行渲染操作   指定场景、相机作为参数
+     */
+
+      light = new THREE.SpotLight('white');
+      light.position.set(-300, 300, 300);
+      light.castShadow = true;
+      scene.add(light);
+      scene.add(new THREE.AmbientLight('white'));
+
+      var mtlLoader = new THREE.MTLLoader();
+      //设置文件夹的路径  ：更改名字就ok
+      mtlLoader.setPath('obj/');
+      //下面就是文件名
+      mtlLoader.load('08ZDT_HT.mtl', function (materials) {
+        materials.preload();
+      //实例化obj加载方法
+        var objLoader = new THREE.OBJLoader();
+        //设置mtl文件的材质
+        objLoader.setMaterials(materials);
+        //文件夹
+        objLoader.setPath('obj/');
+        //文件名
+        objLoader.load('08ZDT_HT.obj', function (object) {
+          mesh = object
+          //模型的x、y、z轴的位置
+          //object.position.x = 0;
+         // object.position.z=-0.3;
+         // object.position.y=-8.3;
+         // object.rotation.y = 0;
+          //object.scale.set(1.5,1.5,1.5);
+          object.scale.set(0.05, 0.05, 0.05);
+
+          meshParent = object;
+          meshArrs = object.children;
+          infolist(meshArrs)
+          for(let x of meshArrs) {
+            colorsOfObj[x.uuid] = x.material.color;
+          }
+
+          //将模型添加到场景当中
+          scene.add(object);
+          renderer.render(scene, camera);
+        });
+      });
+
+
+      //setInterval(draw, 20);
+
+  }
+
+  init();
+
+
+  //鼠标控制旋转和平移
+  function render() {
+    renderer.render(scene, camera); //执行渲染操作
+  }//创建控件对象  相机对象camera作为参数   控件可以监听鼠标的变化，改变相机对象的属性
+  controls = new THREE.OrbitControls(camera);
+  //监听鼠标事件，触发渲染函数，更新canvas画布渲染效果
+  controls.addEventListener('change', render);
+
+  addEventListener('click', onMouseClick, false);
+
+
+
+  // 鼠标触发的方法
+  function onMouseClick(event) {
+    //这个函数就是鼠标点到哪个对象就返回哪个对象
+    function getIntersects(event) {
+      event.preventDefault();
+      //console.log("event.clientX:" + event.clientX)
+      //console.log("event.clientY:" + event.clientY)
+
+      // 声明 raycaster 和 mouse 变量
+      var raycaster = new THREE.Raycaster();
+      var mouse = new THREE.Vector2();
+
+      // 通过鼠标点击位置,计算出 raycaster 所需点的位置,以屏幕为中心点,范围 -1 到 1
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      //通过鼠标点击的位置(二维坐标)和当前相机的矩阵计算出射线位置
+      raycaster.setFromCamera(mouse, camera);
+
+      // 获取与射线相交的对象数组，其中的元素按照距离排序，越近的越靠前
+      var intersects = raycaster.intersectObjects(meshArrs);
+
+      //返回选中的对象
+      return intersects;
+    }
+    // 获取 raycaster 和所有模型相交的数组，其中的元素按照距离排序，越近的越靠前
+    var intersects = getIntersects(event);
+
+    // 获取选中最近的 Mesh 对象
+    if(intersects.length !== 0 && intersects[0].object instanceof THREE.Mesh) {
+      selectObject = intersects[0].object;
+      labelToggle = false;
+      activeObj = selectObject;
+
+      changeMaterial(selectObject);
+      renderDiv(selectObject, event.clientX, event.clientY);
+
+    }else {
+      labelToggle = false;
+    }
+  }
+
+
+  // 改变材料的隐线和颜色
+  function changeMaterial(object) {
+    //这里就是蓝色
+    var color = new THREE.Color("rgb(65,201,225)");
+
+    //var color = new THREE.Color("rgb(255,0,0)");
+
+    var material = new THREE.MeshLambertMaterial({
+      //					transparent: object.material.transparent ? false : true,
+      opacity: 0.9,
+      emissiveIntensity: object.material.emissiveIntensity == 10 ? 1 : 1,
+      reflectivity: 1,
+      //这个才是主管隐线的
+      wireframe: changeMaterialBool ? true : false,
+      morphTargets: true,
+      skinning: true,
+
+      //这里是赋值部件颜色的
+      color:color.equals(object.material.color) ? colorsOfObj[object.uuid] : color
+    });
+    console.log(material.color)
+    object.material = material;
+    render();
+  }
+
+  function renderDiv(object, x, y) {
+    // 显示模型信息
+    //这个在上面建立了label的盒子，相当于在盒子中加html的元素
+    var lab =  document.getElementById("label");
+
+    if(lab.style.display=="none"){
+      lab.style.display="block";
+    }
+
+    $("#label").css("left", document.body.scrollLeft + x + 1);
+    $("#label").css("top", document.body.scrollLeft + y + 10);
+
+    $("#label").html(`
+              <div title="${object.name}">
+                  设备名称:<span>${object.name}</span>
+              </div>
+              <div title="${object.uuid}">
+                  设备ID:<span>${object.uuid}</span>
+              </div>
+          `);
+
+  }
+
+
+  function infolist(object) {
+
+    var innertext = ``;
+
+    for(let x of object) {
+      innertext = innertext + `<div id="${x.name}"  onclick="change_select(\'${x.name}\')">`+ x.name + `</div><br />`;
+    }
+
+
+    console.log(innertext)
+    $("#nlist").html(innertext);
+
+  }
+
+  function change_select(name) {
+    console.log(name)
+
+    for(let x of meshArrs) {
+      if (x.name == name){
+        changeMaterial(x)
+        myrenderDiv(x)
+      }
+
+    }
+
+  }
+
+  function myrenderDiv(object) {
+    // 显示模型信息
+    //这个在上面建立了label的盒子，相当于在盒子中加html的元素
+    var lab =  document.getElementById("label");
+
+    if(lab.style.display=="none"){
+      lab.style.display="block";
+    }
+
+    $("#label").html(`
+              <div title="${object.name}">
+                  设备名称:<span>${object.name}</span>
+              </div>
+              <div title="${object.uuid}">
+                  设备ID:<span>${object.uuid}</span>
+              </div>
+          `);
+
+  }
+
+
+  //让对象自己旋转
+  //setInterval(draw, 20);
+  function draw() {//们在重绘函数中让茶壶旋转：
+    renderer.render(scene, camera);//调用WebGLRenderer的render函数刷新场景
+    mesh.rotation.y += 0.01;//添加动画
+    if (mesh.rotation.y > Math.PI * 2) {
+      mesh.rotation.y -= Math.PI * 2;
+    }
+  }
+
+</script>
+
+</html>

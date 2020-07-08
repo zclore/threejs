@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html>
+	<!-- head可以定义标题、引用脚本等 -->
+	<head>
+		<meta charset="UTF-8">
+
+		<title>载入模型</title>
+
+		<link rel="stylesheet" type="text/css" href="css/reset.css" />
+		<link rel="stylesheet" type="text/css" href="css/rangeslider.css" />
+
+		<link rel="stylesheet" type="text/css" media="all" href="css/zTreeStyle.css" />
+		<link rel="stylesheet" type="text/css" media="all" href="css/treeSelect.css" />
+
+		<link rel="stylesheet/less" type="text/css" href="css/obj.less" />
+
+		<script src="js/less.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>
+		<script type="text/javascript" src="js/three.js"></script>
+		<script type="text/javascript" src="js/TrackballControls.js"></script>
+		<script type="text/javascript" src="js/DDSLoader.js"></script>
+		<script type="text/javascript" src="js/OBJLoader.js"></script>
+		<script type="text/javascript" src="js/OBJMTLLoader.js"></script>
+		<script src="https://ithanmang.gitee.io/threejs/home/libs/examples/js/Detector.js" type="text/javascript" charset="utf-8"></script>
+		<script src="https://ithanmang.gitee.io/threejs/home/libs/examples/js/libs/dat.gui.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="http://www.yanhuangxueyuan.com/threejs/examples/js/controls/OrbitControls.js" type="text/javascript" charset="utf-8"></script>
+		<script src="https://ithanmang.gitee.io/threejs/home/libs/examples/js/controls/TransformControls.js" type="text/javascript" charset="utf-8"></script>
+		<script src="https://ithanmang.gitee.io/threejs/home/libs/examples/js/controls/DragControls.js" type="text/javascript" charset="utf-8"></script>
+
+		<script src="js/rangeslider.min.js" type="text/javascript" charset="utf-8"></script>
+
+		<script src="js/jquery.ztree.all.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/treeSelect.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<!--<div id="percent"></div>-->
+		<div id="label"></div>
+
+		<!-- 菜单栏 -->
+		<div id="menu">
+			<!-- 开闭菜单 -->
+			<div class="btns">
+				<img src="img/open.png" onclick="toggleMenu(event)" />
+			</div>
+
+			<!-- 无序列表 -->
+			<ul>
+				<!-- 第一列，好像只有重置绑定了函数 -->
+				<li>
+					<div onclick="reset()">
+						<img src="img/chongzhi.png" />
+						<p>重置</p>
+					</div>
+
+					<div>
+						<img src="img/PMI.png" />
+						<p>PMI</p>
+					</div>
+				</li>
+
+				<li>
+					<div onclick="shitu()" class="shitu">
+						<img src="img/shitu.png" />
+						<p>视图</p>
+						<ul>
+							<li>
+								<img src="img/bianxianshangse.png" />
+								<p>边线上色</p>
+							</li>
+							<li>
+								<img src="img/shangse.png" />
+								<p>上色</p>
+							</li>
+							<li>
+								<img src="img/yinxianxiaochu.png" />
+								<p>隐线消除</p>
+							</li>
+
+							<li onclick="yinxiankejian()">
+								<img src="img/yinxiankejian.png" />
+								<p>隐线可见</p>
+							</li>
+						</ul>
+					</div>
+
+					<div>
+						<img src="img/toushi.png" />
+						<p>透视</p>
+					</div>
+				</li>
+
+				<li>
+					<div>
+						<img src="img/pizhu.png" />
+						<p>批注</p>
+					</div>
+					<div>
+						<img src="img/tuodong.png" />
+						<p>拖动</p>
+					</div>
+				</li>
+
+				<li>
+					<div>
+						<img src="img/baoqie.png" />
+						<p>刨切</p>
+					</div>
+
+					<div>
+						<img src="img/fuwei.png" />
+						<p>复位</p>
+					</div>
+				</li>
+
+				<li>
+					<!--这个是结构树-->
+					<div onclick="domTree()">
+						<img src="img/jiegoushu.png" />
+						<p>结构树</p>
+					</div>
+
+					<div class="baozha" onclick="toggleInput('.baozha')">
+						<img src="img/baozha.png" />
+						<p>爆炸</p>
+					</div>
+
+				</li>
+
+				<li>
+					<div>
+						<img src="img/celiang.png" />
+						<p>测量</p>
+					</div>
+					<div>
+						<img src="img/pingyi.png" />
+						<p>平移</p>
+					</div>
+				</li>
+
+				<li>
+					<div>
+						<img src="img/suofang.png" />
+						<p>缩放</p>
+					</div>
+					<div>
+						<img src="img/xuanzhuan.png" />
+						<p>旋转</p>
+					</div>
+				</li>
+
+				<li>
+					<div onclick="fullScreen()">
+						<img src="img/quanping.png" />
+						<p>全屏</p>
+					</div>
+					<div>
+						<img src="img/biaoji.png" />
+						<p>标记</p>
+					</div>
+				</li>
+
+				<li>
+					<div class="beijingse" onclick="toggleInput('.beijingse')">
+						<img src="img/beijingse.png" />
+						<p>背景色</p>
+					</div>
+				</li>
+
+			</ul>
+		</div>
+
+
+		<div class="baozhaDiv">
+			<input type="range" name="range" id="range" min="0" max="30" value="0" data-rangeslider/>
+		</div>
+
+		<div class="beijingseDiv">
+			<input type="range" name="range" id="range" min="0" max="250" value="0" data-rangeslider/>
+		</div>
+
+		<div class="treeSelect"></div>
+		<!--<div class="table">
+			<div>
+				爆炸效果
+				<input type="range" name="range" id="range" value="" />
+			</div>
+			<div>
+				<span class="reset">重置</span>
+			</div>
+			
+		</div>-->
+
+	</body>
+
+	<script src="ownjs/range.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+
+		var scene, camera, renderer, controls, light, selectObject, meshArrs, meshParent, labelToggle = true,
+				changeMaterialBool = false,
+				colorsOfObj = {},
+				activeObj;
+		var modelBox3 = new THREE.Box3();
+		var meshBox3 = new THREE.Box3();
+
+
+		// 场景
+		function initScene() {
+			scene = new THREE.Scene();
+		}
+
+		// 相机
+		function initCamera() {
+			camera = new THREE.PerspectiveCamera(10, window.innerWidth / window.innerHeight, 0.1, 2000);
+			camera.position.set(50, 30, 30);
+		}
+
+		// 渲染器
+		function initRenderer() {
+			if(Detector.webgl) {
+				renderer = new THREE.WebGLRenderer({
+					antialias: true
+				});
+			} else {
+				renderer = new THREE.CanvasRenderer();
+			}
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setClearColor('black');
+			document.body.appendChild(renderer.domElement);
+		}
+
+		// 初始化模型
+		function initContent() {
+			var raycaster = new THREE.Raycaster()
+			var mtlLoader = new THREE.MTLLoader();
+			mtlLoader.setPath('obj/');
+			mtlLoader.load('08ZDT_HT.mtl', function(materials) {
+
+				materials.preload();
+
+				var objLoader = new THREE.OBJLoader();
+				objLoader.setMaterials(materials);
+				objLoader.setPath('obj/');
+				objLoader.load('08ZDT_HT.obj', function(object) {
+					object.scale.set(0.05, 0.05, 0.05);
+					meshParent = object;
+					meshArrs = object.children;
+					for(let x of meshArrs) {
+						colorsOfObj[x.uuid] = x.material.color;
+					}
+
+					scene.add(object);
+
+				});
+
+			});
+		}
+
+		//爆炸效果
+		function modelExplode(model, num) {
+			modelBox3 = new THREE.Box3();
+			modelBox3.expandByObject(model);
+
+			var modelWorldPs = new THREE.Vector3().addVectors(modelBox3.max, modelBox3.min).multiplyScalar(0.5);
+			var childBox = new THREE.Box3();
+			model.traverse(function(child) {
+				if(child.isMesh) {
+					childBox.setFromObject(child);
+					var childCenter = new THREE.Vector3().addVectors(childBox.max, childBox.min).multiplyScalar(0.5);
+
+					if(isNaN(childCenter.x)) return;
+					child.childCenter = new THREE.Vector3().subVectors(childCenter, modelWorldPs).normalize();
+					//保存初始坐标
+					//child.userData.oldPs = child.getWorldPosition(new THREE.Vector3());
+					// console.log("初始坐标",child.userData.oldPs);
+					if(!child.isMesh || !child.childCenter) return;
+					//爆炸公式
+					child.position.copy(childCenter).multiplyScalar(num);
+				}
+			});
+
+		}
+
+		// 鼠标触发的方法
+		function onMouseClick(event) {
+
+			//这个函数就是鼠标点到哪个对象就返回哪个对象
+			function getIntersects(event) {
+				event.preventDefault();
+				//console.log("event.clientX:" + event.clientX)
+				//console.log("event.clientY:" + event.clientY)
+
+				// 声明 raycaster 和 mouse 变量
+				var raycaster = new THREE.Raycaster();
+				var mouse = new THREE.Vector2();
+
+				// 通过鼠标点击位置,计算出 raycaster 所需点的位置,以屏幕为中心点,范围 -1 到 1
+				mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+				mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+				//通过鼠标点击的位置(二维坐标)和当前相机的矩阵计算出射线位置
+				raycaster.setFromCamera(mouse, camera);
+
+				// 获取与射线相交的对象数组，其中的元素按照距离排序，越近的越靠前
+				var intersects = raycaster.intersectObjects(meshArrs);
+
+				//返回选中的对象
+				return intersects;
+			}
+
+			// 获取 raycaster 和所有模型相交的数组，其中的元素按照距离排序，越近的越靠前
+			var intersects = getIntersects(event);
+
+			// 获取选中最近的 Mesh 对象
+			if(intersects.length != 0 && intersects[0].object instanceof THREE.Mesh) {
+				selectObject = intersects[0].object;
+				labelToggle = false;
+				activeObj = selectObject;
+
+				changeMaterial(selectObject);
+				renderDiv(selectObject);
+				//					modelExplode(selectObject, 20)
+			}else {
+				labelToggle = false;
+			}
+		}
+
+		// 获取与射线相交的对象数组，这个好像和上面的重复了
+		function getIntersects(event) {
+			event.preventDefault();
+			//			console.log("event.clientX:" + event.clientX)
+			//			console.log("event.clientY:" + event.clientY)
+
+			// 声明 raycaster 和 mouse 变量
+			var raycaster = new THREE.Raycaster();
+			var mouse = new THREE.Vector2();
+
+			// 通过鼠标点击位置,计算出 raycaster 所需点的位置,以屏幕为中心点,范围 -1 到 1
+			mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+			mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+			//通过鼠标点击的位置(二维坐标)和当前相机的矩阵计算出射线位置
+			raycaster.setFromCamera(mouse, camera);
+
+			// 获取与射线相交的对象数组，其中的元素按照距离排序，越近的越靠前
+			var intersects = raycaster.intersectObjects(scene.children);
+
+			//返回选中的对象
+			return intersects;
+		}
+
+		// 窗口变动触发的方法
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+		}
+
+		// 键盘按下触发的方法，这个是按enter键初始化，就是重置
+		function onKeyDown(event) {
+			switch(event.keyCode) {
+				case 13:
+					initCamera();
+					initControls();
+					break;
+			}
+		}
+
+		// 改变对象材质属性, 这个倒是没明白
+		function changeMaterial(object) {
+			//这里就是蓝色
+			var color = new THREE.Color("rgb(65,105,225)");
+
+			//var color = new THREE.Color("rgb(255,0,0)");
+			
+			var material = new THREE.MeshLambertMaterial({
+				//					transparent: object.material.transparent ? false : true,
+				opacity: 0.9,
+				emissiveIntensity: object.material.emissiveIntensity == 10 ? 1 : 1,
+				reflectivity: 1,
+				//这个才是主管隐线的
+				wireframe: changeMaterialBool ? true : false,
+				morphTargets: true,
+				skinning: true,
+
+				//这里是赋值部件颜色的
+				color:color.equals(object.material.color) ? colorsOfObj[object.uuid] : color
+			});
+			console.log(material.color)
+			object.material = material;
+		}
+
+		// 初始化轨迹球控件
+		function initControls() {
+			controls = new THREE.TrackballControls(camera, renderer.domElement);
+			//controls.noRotate = true;
+			//				controls.noPan = true;
+		}
+
+
+		// 添加拖拽控件,
+		function initDragControls() {
+			// 添加平移控件
+			var transformControls = new THREE.TransformControls(camera, renderer.domElement);
+			scene.add(transformControls);
+
+			// 过滤不是 Mesh 的物体,例如辅助网格对象
+			var objects = [];
+			for(let i = 0; i < scene.children.length; i++) {
+				if(scene.children[i].isMesh) {
+					objects.push(scene.children[i]);
+				}
+			}
+			// 初始化拖拽控件
+			var dragControls = new THREE.DragControls(objects, camera, renderer.domElement);
+
+			// 鼠标略过事件
+			dragControls.addEventListener('hoveron', function(event) {
+				// 让变换控件对象和选中的对象绑定
+				transformControls.attach(event.object);
+			});
+
+			// 开始拖拽
+			dragControls.addEventListener('dragstart', function(event) {
+				controls.enabled = false;
+			});
+
+			// 拖拽结束
+			dragControls.addEventListener('dragend', function(event) {
+				controls.enabled = true;
+			});
+		}
+
+		// 初始化灯光
+		function initLight() {
+			light = new THREE.SpotLight('white');
+			light.position.set(-300, 300, 300);
+			light.castShadow = true;
+
+			scene.add(light);
+			scene.add(new THREE.AmbientLight('white'));
+		}
+
+		// 初始化 dat.GUI
+		function initGui() {
+			// 保存需要修改相关数据的对象
+			gui = new function() {
+
+			}
+			// 属性添加到控件
+			var guiControls = new dat.GUI();
+		}
+
+		function initOrbitControls() {
+			var controls = new THREE.OrbitControls(camera, renderer.domElement); //创建控件对象
+			controls.addEventListener('change', animate); //监听鼠标、键盘事件
+		}
+
+		function initAxisHelper() {
+			var axisHelper = new THREE.AxisHelper(250);
+			scene.add(axisHelper);
+		}
+
+		//这个有用处，点击哪个对象，在盒子中显示对象名称
+		// 更新div的位置，
+		function renderDiv(object) {
+			// 显示模型信息
+			//这个在上面建立了label的盒子，相当于在盒子中加html的元素
+			$("#label").html(`
+				<div title="${object.name}">
+					设备名称:<span>${object.name}</span>
+				</div>
+				<div title="${object.uuid}">
+					设备ID:<span>${object.uuid}</span>
+				</div>
+			`);
+
+		}
+
+		// 更新控件
+		function update() {
+			controls.update();
+			controls.handleResize();
+
+		}
+
+		// 初始化
+		function init() {
+			initScene();
+			initCamera();
+			initRenderer();
+			initContent();
+			initLight();
+			initControls();
+			initAxisHelper();
+			initDragControls();
+
+			//				initOrbitControls();
+			//initGui();
+
+			addEventListener('click', onMouseClick, false);
+			addEventListener('resize', onWindowResize, false);
+			addEventListener('keydown', onKeyDown, false);
+
+		}
+
+
+
+		function animate() {
+			requestAnimationFrame(animate);
+			renderer.render(scene, camera);
+			update();
+		}
+
+		init();
+		animate();
+
+		//重置
+		function reset() {
+			initCamera();
+			initControls();
+		}
+
+		//菜单展开和恢复
+		function toggleMenu(e) {
+			var src = $(e.target).attr("src");
+			if($("#menu").width() == 78) {
+				$(e.target).attr("src", src.replace("open", "close"))   //这个是赋值操作
+				$("#menu").width(176)
+			} else
+				{
+				$(e.target).attr("src", src.replace("close", "open"))
+				$("#menu").width(78)
+			}
+		}
+
+		//视图,这个没懂
+		function shitu() {
+			$(".shitu > ul").toggle(200);
+		}
+
+		//这个是爆炸的进度条的使用
+		function toggleInput(el) {
+			console.dir($(el)[0])
+
+
+			let x = $(el)[0].offsetLeft + 50 + 58;
+			let y = $(el)[0].offsetTop + 20 + 30 - $("#menu>ul")[0].scrollTop;
+
+			$(el + "Div").css({
+				'left': x + "px",
+				'top': y + 'px'
+			}).toggle(200);
+		}
+
+		$("#range").on('input', (e) => {
+			for(let x of meshArrs) {
+				modelExplode(x, e.target.value * 0.32)
+			}
+		})
+
+
+		<!-- 结构树 -->
+		//这里结构树是如何起作用的？？？？
+		function domTree() {
+			if($(".treeSelect").html() == "")
+			{
+				var arr = [{
+					name: meshParent.name || "模型",
+					id: 1,
+					pId: 0,
+					type: '0',
+				}]
+
+				for(let x in meshArrs) {
+					arr.push({
+						name: meshArrs[x].name,
+						id: x + '0',
+						pId: 1,
+						type: '1',
+					})
+				}
+
+				//把数组表现出来靠的这里吧
+				$(".treeSelect").treeSelect({
+					data: arr,
+					inputId: "txt",
+
+					//点击 获取到指定obj 变色
+					zTreeOnClick(e) {
+						let name = e.target.innerHTML;
+						for(let x of meshArrs) {
+							if(x.name == name) {
+								changeMaterial(x)
+							}
+						}
+					}
+				})
+			}
+
+			$(".treeSelect").toggle(200)
+
+		}
+
+		<!-- 全屏函数 -->
+		// 全屏函数，可以对document.body 或者div
+		function fullScreen() {
+			var de = document.documentElement;
+
+			if(de.requestFullscreen) {
+				de.requestFullscreen();
+			} else if(de.mozRequestFullScreen) {
+				de.mozRequestFullScreen();
+			} else if(de.webkitRequestFullScreen) {
+				de.webkitRequestFullScreen();
+			} else if(de.msRequestFullscreen) {
+				de.msRequestFullscreen();
+			} else {
+				wtx.info("当前浏览器不支持全屏！");
+			}
+
+		};
+
+		<!-- 隐线可见函数 -->
+		function yinxiankejian() {
+			changeMaterialBool = !changeMaterialBool;
+			console.log(changeMaterialBool)
+			for(let x of meshArrs) {
+				changeMaterial(x)
+			}
+		}
+	</script>
+
+</html>

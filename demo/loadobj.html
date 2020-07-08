@@ -1,0 +1,39 @@
+<html>
+<head>
+    <title>点击文字显示图片</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+<input type="submit" value="在线支付" onclick="display('lb')">
+<div id = 'mmmm'  onclick="display('lb')">
+    请点这里
+</div>
+
+<div id="lb" style="display:none">
+    <p> hello world</p>
+</div>
+
+</body>
+
+<script type="text/javascript">
+
+    $(function () {
+        $("#mmmm")
+        $("#mmmm").toggle(
+            function(){
+                $("div").html("我变了！");
+            })
+    });
+
+    function display(id){
+        var traget=document.getElementById(id);
+        if(traget.style.display=="none"){
+            traget.style.display="";
+        }else{
+            traget.style.display="none";
+        }
+    }
+</script>
+</html>
